@@ -1,101 +1,175 @@
-import mysql.connector
+'''
+ # @ Author: Junping Luo
+ # @ Create Time: 2022-08-02 14:35:40
+ # @ Description: GUI version of Employee Management System Using Python by copyassignment.com
+ '''
+
+
+import email
 from os import system
 import re
-import tkinter
-#making Connection
-con = mysql.connector.connect (
-host = " 127.0.0.1 " , user = " root " , password = "aa203909")
-mycursor= con.cursor() #allows row-by-row processing of the result sets.
-mycursor.execute('CREATE DATABASE Employee')
+import mysql.connector
+import tkinter as tk
+from tkinter import *
+from tkinter import ttk
 
-def check_employee_name(employee_name):
-    # query to select all Rows from
-    # employee(empdata) table
-    sql = 'select * from empdata where Name=%s'
+# TODO Implement Generated Configuration File
+con = mysql.connector.connect(
+    host="localhost", user="root", password="halohalo")
 
-    # making cursor buffered to make
-    # rowcount method work properly
-    c = con.cursor(buffered=True)
-    data = (employee_name,)
+mycursor= con.cursor()
+    
+# make a regular expression for validating an Email
+regex = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+# for validating an Phone Number
+Pattern = re.compile("(0|91)?[7-9][0-9]{9}")
+def init():
+    try:
+    # if DB not exist, create one
+        mycursor.execute("CREATE DATABASE Employee")
+        mycursor.execute("USE Employee")
+    except:
+        mycursor.execute("USE Employee")
+# Create Table
+    try:
+        mycursor.execute("CREATE TABLE empdata ( Id INT(11) PRIMARY KEY , Name VARCHAR(1800), Emial_Id TEXT(1800),Phone_no BIGINT( 11 ), Address TEXT(1000), Post TEXT(1000), Salary BIGINT(20))")
+    except:
+        # Table is created, do nothing
+        pass
 
-    # Execute the sql query
-    c.execute(sql, data)
-
-    # rowcount method to find number
-    # of rowa with given values
-    r = c.rowcount
-    if r == 1:
+def execSQL(cmd: str):
+    try:
+        mycursor.execute(cmd)
         return True
-    else:
+    except:
         return False
 
+        
+class AddEmployeeWindow(tk.Toplevel):
+    def __init__(self, parent):
+        # Entries:
+        # ID, Name, Email, Phone, Address, Post, Salary
+        super().__init__(parent)
+        self.geometry('500x500')
+        self.title('Employee Management System')
+        fname, lname, email, phone, address, zipcode, salary = (tk.StringVar(),) * 7
+        FnameLabel = Label(self ,text = "First Name").grid(row = 0,column = 0)
+        LnameLabel = Label(self ,text = "Last Name").grid(row = 1,column = 0)
+        emailLabel = Label(self ,text = "Email").grid(row = 2,column = 0)
+        phoneLabel = Label(self ,text = "Phone Number").grid(row = 3,column = 0)
+        addressLabel = Label(self ,text = "Address").grid(row = 4,column = 0)
+        zipcodeLabel = Label(self, text = 'Zip Code').grid(row=5, column = 0)
+        salaryLabel = Label(self, text = 'Salary').grid(row=6, column = 0)
+        FnameEntry = Entry(self, textvariable=fname).grid(row = 0,column = 1)
+        LnameEntry = Entry(self, textvariable=lname).grid(row = 1,column = 1)
+        emailEntry = Entry(self, textvariable=email).grid(row = 2,column = 1)
+        phoneEntry = Entry(self, textvariable=phone).grid(row = 3,column = 1)
+        addressEntry = Entry(self, textvariable=address).grid(row = 4,column = 1)
+        zipcodeEntry = Entry(self, textvariable=zipcode).grid(row=5, column = 1)
+        salaryEntry = Entry(self, textvariable=salary).grid(row=6, column = 1)
+        # TODO Finish Functionality of the Submit button
+        def Submit():
+                data = (fname.get(), lname.get(), email.get(), phone.get(),
+                address.get(), zipcode.get(), salary.get())
+        btn = ttk.Button(self ,text="Submit", command=Submit).grid(row=7,column=0)
+        # ttk.Button(self,
+        #         text='Close',
+        #         command=self.destroy).pack(expand=True)
 
-# Function To Check if Employee With
-# given Id Exist or not
-def check_employee(employee_id):
-    # query to select all Rows from
-    # employee(empdata) table
-    sql = 'select * from empdata where Id=%s'
+class DisplayWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
 
-    # making cursor buffered to make
-    # rowcount method work properly
-    c = con.cursor(buffered=True)
-    data = (employee_id,)
+        self.geometry('300x100')
+        self.title('Employee Management System')
 
-    # Execute the sql query
-    c.execute(sql, data)
+        ttk.Button(self,
+                text='Close',
+                command=self.destroy).pack(expand=True)
 
-    # rowcount method to find number
-    # of rowa with given values
-    r = c.rowcount
-    if r == 1:
-        return True
-    else:
-        return False
+class UpdateWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
 
-# Function to Add_Employee
-def Add_Employ():
-    print("{:>60}".format("-->>Add Employee Record<<--"))
-    Id = input("Enter Employee Id: ")
-    # checking If Employee Id is Exit Or Not
-    if (check_employee(Id) == True):
-        print("Employee ID Already Exists\nTry Again..")
-        press = input("Press Any Key To Continue..")
-        Add_Employ()
-    Name = input("Enter Employee Name: ")
-    # checking If Employee Name is Exit Or Not
-    if (check_employee_name(Name) == True):
-        print("Employee Name Already Exists\nTry Again..")
-        press = input("Press Any Key To Continue..")
-        Add_Employ
-    Email_Id = input("Enter Employee Email ID: ")
-    if(re.fullmatch(regex, Email_Id)):
-        print("Valid Email")
-    else:
-        print("Invalid Email")
-        press = input("Press Any Key To Continue..")
-        Add_Employ()
-    Phone_no = input("Enter Employee Phone No.: ")
-    if(Pattern.match(Phone_no)):
-        print("Valid Phone Number")
-    else:
-        print("Invalid Phone Number")
-        press = input("Press Any Key To Continue..")
-        Add_Employ()
-    Address = input("Enter Employee Address: ")
-    Post = input("Enter Employee Post: ")
-    Salary = input("Enter Employee Salary: ")
-    data = (Id, Name, Email_Id, Phone_no, Address, Post, Salary)
-    # Instering Employee Details in
-    # the Employee (empdata) Table
-    sql = 'insert into empdata values(%s,%s,%s,%s,%s,%s,%s)'
-    c = con.cursor()
+        self.geometry('300x100')
+        self.title('Employee Management System')
 
-    # Executing the sql Query
-    c.execute(sql, data)
+        ttk.Button(self,
+                text='Close',
+                command=self.destroy).pack(expand=True)
 
-    # Commit() method to make changes in the table
-    con.commit()
-    print("Successfully Added Employee Record")
-    press = input("Press Any Key To Continue..")
-    menu()
+class PromoteWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('300x100')
+        self.title('Employee Management System')
+
+        ttk.Button(self,
+                text='Close',
+                command=self.destroy).pack(expand=True)
+
+class RemoveWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('300x100')
+        self.title('Employee Management System')
+
+        ttk.Button(self,
+                text='Close',
+                command=self.destroy).pack(expand=True)
+
+class SearchWindow(tk.Toplevel):
+    def __init__(self, parent):
+        super().__init__(parent)
+
+        self.geometry('300x100')
+        self.title('Employee Management System')
+
+        ttk.Button(self,
+                text='Close',
+                command=self.destroy).pack(expand=True)
+
+
+class App(tk.Tk):
+    def __init__(self):
+        super().__init__()
+        self.windows_dic = {
+            'A': AddEmployeeWindow, 'D': DisplayWindow, 'U': UpdateWindow,
+            'P': PromoteWindow, 'R': RemoveWindow, 'S': SearchWindow
+        }
+        self.geometry('500x300')
+        self.title('Employee Management System')
+
+        # place a button on the root window
+        ttk.Button(self,
+                text='Add Employee Record',
+                command=lambda :self.open_new_window('A')).pack(expand=True)
+        ttk.Button(self,
+                text='Display Records',
+                command=lambda :self.open_new_window('D')).pack(expand=True)
+        ttk.Button(self,
+                text='Update Employee Record',
+                command=lambda :self.open_new_window('U')).pack(expand=True)
+        ttk.Button(self,
+                text='Promote Employee',
+                command=lambda :self.open_new_window('P')).pack(expand=True)
+        ttk.Button(self,
+                text='Remove Employee Record',
+                command=lambda :self.open_new_window('R')).pack(expand=True)
+        ttk.Button(self,
+                text='Search Employee Record',
+                command=lambda :self.open_new_window('S')).pack(expand=True)
+        ttk.Button(self,
+                text='Quit System',
+                command=lambda :self.destroy()).pack(expand=True)
+    
+    def open_new_window(self, win: str):
+        new_window = self.windows_dic[win](self)
+        new_window.grab_set()
+
+
+if __name__ == "__main__":
+    app = App()
+    app.mainloop()
