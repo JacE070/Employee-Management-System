@@ -7,14 +7,12 @@ import mysql.connector
 # making Connection
 
 
-
-
 # TODO Implement Generated Configuration File
 con = mysql.connector.connect(
     host="localhost", user="root", password="aa203909")
 
 
-mycursor= con.cursor()
+mycursor = con.cursor()
 try:
     # if DB not exist, create one
     mycursor.execute("CREATE DATABASE Employee")
@@ -27,7 +25,7 @@ try:
 except:
     # Table is created, do nothing
     pass
-    
+
 
 # make a regular expression
 # for validating an Email
@@ -85,6 +83,8 @@ def Add_Employ():
 
 # Function To Check if Employee With
 # given Name Exist or not
+
+
 def check_employee_name(employee_name):
     # query to select all Rows from
     # employee(empdata) table
@@ -131,6 +131,8 @@ def check_employee(employee_id):
         return False
 
 # Function to Display_Employ
+
+
 def Display_Employ():
     print("{:>60}".format("-->> Display Employee Record <<--"))
     # query to select all rows from Employee (empdata) Table
@@ -155,6 +157,8 @@ def Display_Employ():
     menu()
 
 # Function to Update_Employ
+
+
 def Update_Employ():
     print("{:>60}".format("-->> Update Employee Record <<--\n"))
     Id = input("Enter Employee Id: ")
@@ -194,6 +198,8 @@ def Update_Employ():
         menu()
 
 # Function to Promote_Employ
+
+
 def Promote_Employ():
     print("{:>60}".format("-->> Promote Employee Record <<--\n"))
     Id = input("Enter Employee Id: ")
@@ -203,33 +209,35 @@ def Promote_Employ():
         press = input("Press Any Key To Continue..")
         menu()
     else:
-        Amount  = int(input("Enter Increase Salary: "))
-        #query to fetch salary of Employee with given data
+        Amount = int(input("Enter Increase Salary: "))
+        # query to fetch salary of Employee with given data
         sql = 'select Salary from empdata where Id=%s'
         data = (Id,)
         c = con.cursor()
-        
-        #executing the sql query
+
+        # executing the sql query
         c.execute(sql, data)
-        
-        #fetching salary of Employee with given Id
+
+        # fetching salary of Employee with given Id
         r = c.fetchone()
         t = r[0]+Amount
-        
-        #query to update salary of Employee with given id
+
+        # query to update salary of Employee with given id
         sql = 'update empdata set Salary = %s where Id = %s'
         d = (t, Id)
 
-        #executing the sql query
+        # executing the sql query
         c.execute(sql, d)
 
-        #commit() method to make changes in the table 
+        # commit() method to make changes in the table
         con.commit()
         print("Employee Promoted")
         press = input("Press Any key To Continue..")
         menu()
 
 # Function to Remove_Employ
+
+
 def Remove_Employ():
     print("{:>60}".format("-->> Remove Employee Record <<--\n"))
     Id = input("Enter Employee Id: ")
@@ -239,21 +247,23 @@ def Remove_Employ():
         press = input("Press Any Key To Continue..")
         menu()
     else:
-        #query to delete Employee from empdata table
+        # query to delete Employee from empdata table
         sql = 'delete from empdata where Id = %s'
         data = (Id,)
         c = con.cursor()
 
-        #executing the sql query
+        # executing the sql query
         c.execute(sql, data)
 
-        #commit() method to make changes in the empdata table
+        # commit() method to make changes in the empdata table
         con.commit()
         print("Employee Removed")
         press = input("Press Any key To Continue..")
         menu()
-        
+
 # Function to Search_Employ
+
+
 def Search_Employ():
     print("{:>60}".format("-->> Search Employee Record <<--\n"))
     Id = input("Enter Employee Id: ")
@@ -263,15 +273,15 @@ def Search_Employ():
         press = input("Press Any Key To Continue..")
         menu()
     else:
-        #query to search Employee from empdata table
+        # query to search Employee from empdata table
         sql = 'select * from empdata where Id = %s'
         data = (Id,)
         c = con.cursor()
-        
-        #executing the sql query
+
+        # executing the sql query
         c.execute(sql, data)
 
-        #fetching all details of all the employee
+        # fetching all details of all the employee
         r = c.fetchall()
         for i in r:
             print("Employee Id: ", i[0])
@@ -286,6 +296,8 @@ def Search_Employ():
         menu()
 
 # Menu function to display menu
+
+
 def menu():
     system("clear")
     print("{:>60}".format("************************************"))

@@ -7,8 +7,10 @@ name = "pypi"
 mysqlclient = "*"
 mysql-connector-python = "*"
 pymysql = "*"
+mysql = "*"
 
 [dev-packages]
+autopep8 = "*"
 
 [requires]
 python_version = "3.9"
