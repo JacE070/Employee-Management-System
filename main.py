@@ -39,7 +39,7 @@ def init():
     # Create Table
     try:
         mycursor.execute(
-            "CREATE TABLE empdata ( Id INT(11) PRIMARY KEY , Name VARCHAR(1800), Emial_Id TEXT(1800),Phone_no BIGINT( 11 ), Address TEXT(1000), Post TEXT(1000), Salary BIGINT(20))")
+            "CREATE TABLE empdata ( Id INT(11) PRIMARY KEY , Name VARCHAR(1800), Email_Id TEXT(1800),Phone_no BIGINT( 11 ), Address TEXT(1000), Post TEXT(1000), Salary BIGINT(20))")
     except:
         # Table is created, do nothing
         pass
@@ -53,15 +53,22 @@ def execSQL(cmd: str):
         return False
 
 
-def doesEmployeeExist(employee_name, employee_id):
+def doesEmployeeExist(employee_name=None, employee_id=None):
     # query to select all Rows from
     # employee(empdata) table
-    sql = 'select * from empdata where Name=%s and Id=%s'
+    sql = None
+    if employee_id and employee_name:
+        sql = 'select * from empdata where Name=%s and Id=%s'
+    elif employee_id:
+        sql = 'select * from empdata where Id=%s'
+    elif employee_name:
+        sql = 'select * from empdata where Name=%s'
 
     # making cursor buffered to make
     # rowcount method work properly
     c = mysqlConnector.cursor(buffered=True)
-    data = (employee_name, employee_id)
+    data = tuple((i for i in (employee_name, employee_id) if i))
+    print(data)
 
     # Execute the sql query
     c.execute(sql, data)
@@ -75,6 +82,7 @@ def doesEmployeeExist(employee_name, employee_id):
         return False
 
 
+# TODO: Improve layouts
 class AddEmployeeWindow(tk.Toplevel):
     def __init__(self, parent):
         # Entries:
@@ -100,7 +108,6 @@ class AddEmployeeWindow(tk.Toplevel):
         addressEntry = Entry(self, textvariable=address).grid(row=5, column=1)
         zipcodeEntry = Entry(self, textvariable=zipcode).grid(row=6, column=1)
         salaryEntry = Entry(self, textvariable=salary).grid(row=7, column=1)
-        # TODO Finish Functionality of the Submit button
 
         def Submit():
             name = f'{fname.get()} {lname.get()}'
@@ -130,7 +137,7 @@ class DisplayWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.geometry('300x100')
+        self.geometry('500x500')
         self.title('Employee Management System')
 
         ttk.Button(self,
@@ -138,35 +145,93 @@ class DisplayWindow(tk.Toplevel):
                    command=self.destroy).pack(expand=True)
 
 
+# TODO: Improve layouts
 class UpdateWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.geometry('300x100')
+        self.geometry('500x500')
         self.title('Employee Management System')
+        id, email, phone, address, zipcode = tk.StringVar(), tk.StringVar(
+        ), tk.StringVar(), tk.StringVar(), tk.StringVar()
+        prompt1 = Label(
+            self, text="You want to update the record of person with ID:").grid(row=0, column=0)
+        idLabel = Label(self, text="ID").grid(row=1, column=1)
+        prompt2 = Label(
+            self, text="Update Info:"
+        ).grid(row=2, column=0)
+        emailLabel = Label(self, text="Email").grid(row=3, column=1)
+        phoneLabel = Label(self, text="Phone Number").grid(row=4, column=1)
+        addressLabel = Label(self, text="Address").grid(row=5, column=1)
+        zipcodeLabel = Label(self, text='Zip Code').grid(row=6, column=1)
+        idEntry = Entry(self, textvariable=id).grid(row=1, column=2)
+        emailEntry = Entry(self, textvariable=email).grid(row=3, column=2)
+        phoneEntry = Entry(self, textvariable=phone).grid(row=4, column=2)
+        addressEntry = Entry(self, textvariable=address).grid(row=5, column=2)
+        zipcodeEntry = Entry(self, textvariable=zipcode).grid(row=6, column=2)
 
-        ttk.Button(self,
-                   text='Close',
-                   command=self.destroy).pack(expand=True)
+        def Submit():
+            if not doesEmployeeExist(employee_id=id.get()):
+                messagebox.showinfo(message="Employee doesn't exist.")
+            elif not re.fullmatch(emailPattern, email.get()):
+                messagebox.showinfo(message="Invalid Email Address")
+            elif not re.fullmatch(phonePattern, phone.get()):
+                # print(phone.get())
+                messagebox.showinfo(message="Invalid Phone Number")
+            else:
+                data = (email.get(), phone.get(),
+                        address.get(), zipcode.get(), id.get())
+                sql = 'UPDATE empdata set Email_Id = %s, Phone_no = %s, Address = %s, Post = %s where Id = %s'
+                mycursor.execute(sql, data)
+                mysqlConnector.commit()
+                messagebox.showinfo(message="Successfully Update!")
+                self.destroy()
+        btn = ttk.Button(self, text="Update",
+                         command=Submit).grid(row=8, column=0)
 
 
 class PromoteWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.geometry('300x100')
+        self.geometry('500x500')
         self.title('Employee Management System')
+        id, fname, lname, salary = tk.StringVar(), tk.StringVar(
+        ), tk.StringVar(), tk.StringVar()
+        idLabel = Label(self, text="ID").grid(row=0, column=0)
+        FnameLabel = Label(self, text="First Name").grid(row=1, column=0)
+        LnameLabel = Label(self, text="Last Name").grid(row=2, column=0)
+        salaryLabel = Label(self, text='Salary').grid(row=3, column=0)
+        idEntry = Entry(self, textvariable=id).grid(row=0, column=1)
+        FnameEntry = Entry(self, textvariable=fname).grid(row=1, column=1)
+        LnameEntry = Entry(self, textvariable=lname).grid(row=2, column=1)
+        salaryEntry = Entry(self, textvariable=salary).grid(row=3, column=1)
 
-        ttk.Button(self,
-                   text='Close',
-                   command=self.destroy).pack(expand=True)
+        def Submit():
+            name = f'{fname.get()} {lname.get()}'
+            if not doesEmployeeExist(name, id.get()):
+                messagebox.showinfo(message="Employee doesn't exist.")
+            else:
+                mycursor.execute(
+                    'select Salary from empdata where Id = {}'.format(id.get()))
+                current_salary = mycursor.fetchall()[0][0]
+                # print(salary.get(), current_salary)
+                added_salary = int(salary.get()) + int(current_salary)
+                data = (added_salary, (id.get()))
+                sql = 'update empdata set Salary = %s where Id = %s'
+                mycursor.execute(sql, data)
+                mysqlConnector.commit()
+                messagebox.showinfo(message="Successfully Promote!")
+                self.destroy()
+        btn = ttk.Button(self, text="Update",
+                         command=Submit).grid(row=8, column=0)
 
 
 class RemoveWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.geometry('300x100')
+        self.geometry('500x500')
         self.title('Employee Management System')
 
         ttk.Button(self,
@@ -178,7 +243,7 @@ class SearchWindow(tk.Toplevel):
     def __init__(self, parent):
         super().__init__(parent)
 
-        self.geometry('300x100')
+        self.geometry('500x500')
         self.title('Employee Management System')
 
         ttk.Button(self,
