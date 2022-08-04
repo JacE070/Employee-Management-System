@@ -233,10 +233,33 @@ class RemoveWindow(tk.Toplevel):
 
         self.geometry('500x500')
         self.title('Employee Management System')
+        id, fname, lname = tk.StringVar(), tk.StringVar(
+        ), tk.StringVar()
+        idLabel = Label(self, text="ID").grid(row=0, column=0)
+        FnameLabel = Label(self, text="First Name").grid(row=1, column=0)
+        LnameLabel = Label(self, text="Last Name").grid(row=2, column=0)
 
-        ttk.Button(self,
-                   text='Close',
-                   command=self.destroy).pack(expand=True)
+        idEntry = Entry(self, textvariable=id).grid(row=0, column=1)
+        FnameEntry = Entry(self, textvariable=fname).grid(row=1, column=1)
+        LnameEntry = Entry(self, textvariable=lname).grid(row=2, column=1)
+
+        def Submit():
+            name = f'{fname.get()} {lname.get()}'
+            if not doesEmployeeExist(name, id.get()):
+                messagebox.showinfo(message="Employee doesn't exist.")
+            else:
+                answer = messagebox.askyesno(
+                    title="Confirmation", message="Are you sure to remove this record?", icon='warning')
+                if answer:
+                    sql = 'delete from empdata where Id = %s'
+                    data = (id.get(),)
+                    mycursor.execute(sql, data)
+                    mysqlConnector.commit()
+                    messagebox.showinfo(message="Successfully Remove!")
+                    self.destroy()
+
+        btn = ttk.Button(self, text="Remove",
+                         command=Submit).grid(row=3, column=0)
 
 
 class SearchWindow(tk.Toplevel):
