@@ -3,15 +3,19 @@ from os import system
 import re
 # importing mysql connector
 import mysql.connector
+import platform
+
 
 # making Connection
 
 
 # TODO Implement Generated Configuration File
 con = mysql.connector.connect(
-    host="localhost", user="root", password="aa203909")
+    host="localhost", user="root", password="halohalo")
 
-
+my_os = platform.system()
+print(my_os)
+clear_cmd = 'cls' if my_os == 'Windows' else 'clear'
 mycursor = con.cursor()
 try:
     # if DB not exist, create one
@@ -299,7 +303,7 @@ def Search_Employ():
 
 
 def menu():
-    system("clear")
+    system(clear_cmd)
     print("{:>60}".format("************************************"))
     print("{:>60}".format("-->> Employee Management System <<--"))
     print("{:>60}".format("************************************"))
@@ -314,25 +318,25 @@ def menu():
 
     ch = int(input("Enter your Choice: "))
     if ch == 1:
-        system("clear")
+        system(clear_cmd)
         Add_Employ()
     elif ch == 2:
-        system("clear")
+        system(clear_cmd)
         Display_Employ()
     elif ch == 3:
-        system("clear")
+        system(clear_cmd)
         Update_Employ()
     elif ch == 4:
-        system("clear")
+        system(clear_cmd)
         Promote_Employ()
     elif ch == 5:
-        system("clear")
+        system(clear_cmd)
         Remove_Employ()
     elif ch == 6:
-        system("clear")
+        system(clear_cmd)
         Search_Employ()
     elif ch == 7:
-        system("clear")
+        system(clear_cmd)
         print("{:>60}7".format("Have A NIce Day :)"))
         exit(0)
     else:

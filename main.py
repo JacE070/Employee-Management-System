@@ -135,16 +135,7 @@ class AddEmployeeWindow(tk.Toplevel):
         #         command=self.destroy).pack(expand=True)
 
 
-class DisplayWindow(tk.Toplevel):
-    def __init__(self, parent):
-        super().__init__(parent)
-
-        self.geometry('500x500')
-        self.title('Employee Management System')
-
-        ttk.Button(self,
-                   text='Close',
-                   command=self.destroy).pack(expand=True)
+# Display function is removed.
 
 
 # TODO: Improve layouts
