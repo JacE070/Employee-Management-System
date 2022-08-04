@@ -347,9 +347,13 @@ class App(tk.Tk):
         ttk.Button(self,
                    text='Search Employee Record',
                    command=lambda: self.open_new_window('S')).pack(expand=True)
+
+        def bye():
+            messagebox.showinfo(title="Bye", message="Have a nice day!")
+            self.destroy()
         ttk.Button(self,
                    text='Quit System',
-                   command=lambda: self.destroy()).pack(expand=True)
+                   command=bye).pack(expand=True)
 
     def open_new_window(self, win: str):
         new_window = self.windows_dic[win](self)
