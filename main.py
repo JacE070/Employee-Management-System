@@ -313,7 +313,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.windows_dic = {
-            'A': AddEmployeeWindow, 'D': DisplayWindow, 'U': UpdateWindow,
+            'A': AddEmployeeWindow, 'U': UpdateWindow,
             'P': PromoteWindow, 'R': RemoveWindow, 'S': SearchWindow
         }
         self.geometry('500x300')
@@ -323,9 +323,6 @@ class App(tk.Tk):
         ttk.Button(self,
                    text='Add Employee Record',
                    command=lambda: self.open_new_window('A')).pack(expand=True)
-        ttk.Button(self,
-                   text='Display Records',
-                   command=lambda: self.open_new_window('D')).pack(expand=True)
         ttk.Button(self,
                    text='Update Employee Record',
                    command=lambda: self.open_new_window('U')).pack(expand=True)
