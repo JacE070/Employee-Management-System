@@ -5,17 +5,15 @@
  '''
 
 
-from audioop import add
-import email
 from os import system
 import re
 from time import sleep
 from tkinter import messagebox
-from tkinter.filedialog import SaveAs
 import mysql.connector
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+import configparser
 
 # TODO Implement Generated Configuration File
 mysqlConnector = mysql.connector.connect(
@@ -29,6 +27,9 @@ emailPattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
 phonePattern = r"(0|91)?[7-9][0-9]{9}"
 idPattern = r"[0-9]+"
 namePattern = r"[a-zA-Z]+ [a-zA-Z]+"
+
+# TODO: Need a window that sets up the Database.
+# https://xin053.github.io/2016/07/18/configparser%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E5%99%A8%E4%BD%BF%E7%94%A8%E8%AF%A6%E8%A7%A3/
 
 
 def init():
