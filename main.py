@@ -5,11 +5,13 @@
  '''
 
 
+from audioop import add
 import email
 from os import system
 import re
 from time import sleep
 from tkinter import messagebox
+from tkinter.filedialog import SaveAs
 import mysql.connector
 import tkinter as tk
 from tkinter import *
@@ -268,10 +270,52 @@ class SearchWindow(tk.Toplevel):
 
         self.geometry('500x500')
         self.title('Employee Management System')
+        id, email, phone, address, zipcode, name, salary = tk.StringVar(), tk.StringVar(
+        ), tk.StringVar(), tk.StringVar(), tk.StringVar(), tk.StringVar(), tk.StringVar()
+        prompt1 = Label(
+            self, text="You want to search the record of person with ID:").grid(row=0, column=0)
+        idLabel = Label(self, text="ID").grid(row=1, column=1)
+        prompt2 = Label(
+            self, text="Info:"
+        ).grid(row=2, column=0)
+        nameLabel = Label(self, text="Name").grid(row=3, column=1)
+        emailLabel = Label(self, text="Email").grid(row=4, column=1)
+        phoneLabel = Label(self, text="Phone Number").grid(row=5, column=1)
+        addressLabel = Label(self, text="Address").grid(row=6, column=1)
+        zipcodeLabel = Label(self, text='Zip Code').grid(row=7, column=1)
+        salaryLabel = Label(self, text='Salary').grid(row=8, column=1)
+        idEntry = Entry(self, textvariable=id).grid(row=1, column=2)
+        nameEntry = Entry(self, textvariable=name,
+                          state="disabled").grid(row=3, column=2)
+        emailEntry = Entry(self, textvariable=email,
+                           state="disabled").grid(row=4, column=2)
+        phoneEntry = Entry(self, textvariable=phone,
+                           state="disabled").grid(row=5, column=2)
+        addressEntry = Entry(self, textvariable=address,
+                             state="disabled").grid(row=6, column=2)
+        zipcodeEntry = Entry(self, textvariable=zipcode,
+                             state="disabled").grid(row=7, column=2)
+        salaryEntry = Entry(self, textvariable=salary,
+                            state="disabled").grid(row=8, column=2)
 
-        ttk.Button(self,
-                   text='Close',
-                   command=self.destroy).pack(expand=True)
+        def Submit():
+            if not doesEmployeeExist(employee_id=id.get()):
+                messagebox.showinfo(message="Employee doesn't exist.")
+            else:
+                data = (id.get(),)
+                sql = 'select * from empdata where Id = %s'
+                mycursor.execute(sql, data)
+                result = mycursor.fetchall()[0]
+                name.set(result[1])
+                email.set(result[2])
+                phone.set(result[3])
+                address.set(result[4])
+                zipcode.set(result[5])
+                salary.set(result[6])
+                # messagebox.showinfo(message="Successfully Update!")
+                # self.destroy()
+        btn = ttk.Button(self, text="Search",
+                         command=Submit).grid(row=9, column=0)
 
 
 class App(tk.Tk):
